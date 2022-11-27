@@ -22,6 +22,7 @@
                             <field name="date_request"/>
                             <field name="loan_days"/>
                             <field name="due_date"/>
+                            <field name="assignee_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}" readonly="1"/>
                         </group>
                     </group>
                     <footer>

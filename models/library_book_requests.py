@@ -34,6 +34,7 @@ class LibraryBookRequests(models.Model):
     _name = "library.book.requests"
     _rec_name = 'name'
     _description = "Library Book Requests"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     _STATE = [
         ('draft', "Draft"),
@@ -60,6 +61,7 @@ class LibraryBookRequests(models.Model):
     subject_id = fields.Many2one('library.subject.config', string="Subject", index=True)
     requestor_id = fields.Many2one('res.users', "Requested By", ondelete='restrict')
     approver_id = fields.Many2one('res.users', "Done By")
+    assignee_id = fields.Many2one('res.users', string='Assigned to', default=lambda self: self.env.user, copy=False)
     date_request = fields.Date("Date Request", copy=False)
     date_returned = fields.Date("Returned Date", copy=False)
     loan_days = fields.Integer("Loan Days", copy=False)
@@ -69,6 +71,10 @@ class LibraryBookRequests(models.Model):
     reject_reason = fields.Text()
     is_feedback = fields.Boolean()
 
+    def get_assignee_recepients(self):
+        self.ensure_one()
+        return self.assignee_id.login
+
     def action_confirm(self):
         for rec in self:
             rec.state = 'confirm'
@@ -77,16 +83,35 @@ class LibraryBookRequests(models.Model):
         for rec in self:
             rec.state = 'approve'
 
+            email = self.env.ref('library_management.email_template_library_book_request_approved')
+            email.sudo().with_context({'assignee_id': rec.assignee_id}).send_mail(rec.id, force_send=True)
+
     def action_done(self):
         for rec in self:
             rec.state = 'done'
             rec.book_id.book_status = 'available'
             rec.approver_id = self.env.user.id
 
+            email = self.env.ref('library_management.email_template_library_book_request_done')
+            email.sudo().with_context({'assignee_id': rec.assignee_id}).send_mail(rec.id, force_send=True)
+
     def action_start_loan(self):
         for rec in self:
             rec.state = 'in_progress'
             rec.book_id.book_status = 'book_loan'
+
+    def send_notification(self):
+        res = super(LibraryBookRequests, self)
+        notification_ids = []
+        for rec in self:
+            notification_ids.append((0, 0, {
+                'res_partner_id': rec.assignee_id.partner_id.id,
+                'notification_type': 'inbox'}))
+        self.message_post(body='This is to inform you that %s request a book.' % self.requestor_id.name,
+                          message_type='notification',
+                          subtype='mail.mt_comment', author_id=self.assignee_id.partner_id.id,
+                          notification_ids=notification_ids)
+        return res
 
     # def unlink(self):
     #     for rec in self:

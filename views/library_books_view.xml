@@ -18,7 +18,7 @@
 								confirm="Details in book records may not no longer be modified once confirmed, Proceed?"
 								groups="library_management.group_library_librarian,library_management.group_library_admin"/>
                         <button name="%(library_management.action_library_book_request_wizard)d" string="Request Book" type="action" class="oe_highlight"
-                                context="{'default_book_id': id, 'default_name': name, 'default_category_id': category_id,
+                                context="{'default_book_id': id, 'default_name': name, 'default_category_id': category_id, 'default_assignee_id': assignee_id,
                                 'default_book_title': book_title, 'default_book_author_id': book_author_id, 'default_subject_id': subject_id}"
                                 attrs="{'invisible':[('state','!=','publish')]}"
                                 groups="base.group_user,library_management.group_library_librarian,library_management.group_library_admin"/>
@@ -28,8 +28,14 @@
                     <sheet>
                         <field name="active" invisible="1"/>
                         <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
-                        <field name="image_medium" widget="image" class="oe_right oe_avatar"/>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_book_requests"
+                                type="object" icon="fa-book" class="oe_stat_button" attrs="{'invisible':[('count_request','=','0')]}">
+                                <field name="count_request" string="Book Requests" widget="statinfo"/>
+                            </button>
+                        </div>
                         <div class="oe_title">
+                             <field name="image_medium" widget="image" class="oe_right oe_avatar"/>
                             <label for="name" class="oe_edit_only"/>
                             <h1>
                                 <field name="name" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
@@ -54,6 +60,7 @@
                             <group>
                                 <field name="bookshelves" widget="char" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
                                 <field name="book_status"/>
+                                <field name="assignee_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}" readonly="1"/>
                             </group>
                         </group>
                         <notebook>
@@ -64,11 +71,13 @@
                                         <field name="book_publisher_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
                                         <field name="book_copyright_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
                                         <field name="book_edition_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
+                                        <field name="book_qty"/>
                                     </group>
                                     <group string="Basic Information">
                                         <field name="book_title" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
                                         <field name="book_author_id" options="{'no_create': True, 'no_edit': True, 'no_open': True}" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
                                         <field name="book_pages" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
+                                        <field name="book_cost"/>
                                     </group>
                                 </group>
                             </page>

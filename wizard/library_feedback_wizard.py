@@ -1,9 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-# Copyright (c) 2021 Taliform Inc.
-#
-# Author: Benjamin Cerdena Jr. <benjamin@taliform.com>
+# Copyright (c) 2022.
 #
 # WARNING: This program as such is intended to be used by professional
 # programmers who take the whole responsibility of assessing all potential

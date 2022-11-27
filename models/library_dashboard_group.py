@@ -1,9 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-# Copyright (c) 2021 Taliform Inc.
-#
-# Author:Benjamin Cerdena Jr. <benjamin@taliform.com>
+# Copyright (c) Benjamin 2022
 #
 # WARNING: This program as such is intended to be used by professional
 # programmers who take the whole responsibility of assessing all potential
@@ -24,5 +22,22 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
 ##############################################################################
+from datetime import date
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
-from . import library_book_requests_wizard, library_feedback_wizard, library_change_password_wizard
+
+class LibraryDashboardGroup(models.Model):
+    _name = "library.dashboard.group"
+    _description = "Library Announcements & Events"
+
+    _TYPE = [
+        ('announcement', 'Announcement'),
+        ('event', 'Event')
+    ]
+
+    name = fields.Char("Name")
+    description = fields.Text("Description")
+    type = fields.Selection(_TYPE, "Type")
+    sequence = fields.Integer("Sequence", copy=False)
+    active = fields.Boolean(default=True)

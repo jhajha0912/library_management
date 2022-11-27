@@ -64,6 +64,20 @@ class LibraryBooks(models.Model):
     book_file = fields.Binary("File", copy=False)
     file_name = fields.Char("File Name")
     active = fields.Boolean(default=True)
+    assignee_id = fields.Many2one('res.users', string='Assigned to', default=lambda self: self.env.user, copy=False)
+    book_cost = fields.Float('Book Cost')
+    book_qty = fields.Integer('Book Quantity')
+    book_request_ids = fields.One2many('library.book.requests', 'book_id', string="Book Requests")
+    count_request = fields.Integer('Book Loan Quantity', compute='_get_book_requests_count')
+
+    @api.depends('book_request_ids')
+    def _get_book_requests_count(self):
+        for rec in self:
+            rec.count_request = 0
+            count_request = len(rec.book_request_ids.filtered_domain(
+                [('state', 'in', ['in_progress', 'overdue'])]))
+            if count_request > 0:
+                rec.count_request = count_request
 
     def action_confirm(self):
         for rec in self:
@@ -77,6 +91,20 @@ class LibraryBooks(models.Model):
         for rec in self:
             rec.state = 'publish'
             rec.book_status = 'available'
+
+    def action_view_book_requests(self):
+        self.ensure_one()
+
+        vals = {
+            'name': 'Book Requests',
+            'view_mode': 'tree,form',
+            'res_model': 'library.book.requests',
+            'type': 'ir.actions.act_window',
+            'context': {},
+            'domain': [('id', 'in', self.book_request_ids.ids), ('state', 'in', ['in_progress', 'overdue'])],
+            'target': 'current',
+        }
+        return vals
 
     def unlink(self):
         for rec in self:

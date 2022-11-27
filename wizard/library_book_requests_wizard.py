@@ -1,9 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-# Copyright (c) 2021 Taliform Inc.
-#
-# Author: Benjamin Cerdena Jr. <benjamin@taliform.com>
+# Copyright (c) 2022.
+
 #
 # WARNING: This program as such is intended to be used by professional
 # programmers who take the whole responsibility of assessing all potential
@@ -42,6 +41,7 @@ class LibraryBookRequestsWizard(models.TransientModel):
     subject_id = fields.Many2one('library.subject.config', string="Subject")
     student_id = fields.Many2one('library.personal.information', "Student",
                                  default=lambda self: self.env.user.personal_info_id.id)
+    assignee_id = fields.Many2one('res.users', string='Assigned to')
     requestor_id = fields.Many2one('res.users', "Requested By", default=lambda self: self.env.user)
     date_request = fields.Date("Date Request")
     loan_days = fields.Integer("Loan Days")
@@ -59,6 +59,8 @@ class LibraryBookRequestsWizard(models.TransientModel):
     def action_confirm(self):
         book_req_obj = self.env['library.book.requests']
         for rec in self:
+            if rec.book_id.book_qty == rec.book_id.count_request:
+                raise ValidationError(_("We cannot process your request this time due of books unavailability."))
             vals = {
                 'name': self.env['ir.sequence'].next_by_code('book_req_number'),
                 'student_id': rec.student_id.id,
@@ -78,6 +80,10 @@ class LibraryBookRequestsWizard(models.TransientModel):
             record = book_req_obj.sudo().create(vals)
 
             record.student_id.book_request_ids = [(4, record.id)]
+
+            email = self.env.ref('library_management.email_template_library_book_request')
+            email.sudo().with_context({'assignee_id': self.assignee_id}).send_mail(record.id, force_send=True)
+            record.send_notification()
 
             return {
                 'name': 'Book Request',

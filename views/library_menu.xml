@@ -6,11 +6,19 @@
 				  web_icon="library_management,static/description/icon.png"/>
 
 		<menuitem
+			id="library_dashboard_menu"
+			name="Dashboard"
+			action="library_management.action_library_dashboard_group_menu"
+			parent="library_mainmenu"
+			sequence="1"
+			groups="base.group_user,library_management.group_library_librarian,library_management.group_library_admin"/>
+
+		<menuitem
 			id="library_books_menu"
 			name="Books"
 			action="library_management.action_library_books"
 			parent="library_mainmenu"
-			sequence="1"
+			sequence="2"
 			groups="base.group_user,library_management.group_library_librarian,library_management.group_library_admin"/>
 
 		<menuitem
@@ -18,7 +26,7 @@
             name="Book Requests"
 			action="library_management.action_library_book_requests"
             parent="library_mainmenu"
-            sequence="2"
+            sequence="3"
 			groups="base.group_user,library_management.group_library_librarian,library_management.group_library_admin"/>
 
 		<menuitem
@@ -26,7 +34,7 @@
             name="Personal Information"
 			action="library_management.library_personal_information_action"
             parent="library_mainmenu"
-            sequence="3"
+            sequence="4"
 			groups="library_management.group_library_librarian,library_management.group_library_admin"/>
 
 		<menuitem
@@ -34,21 +42,55 @@
             name="Feedbacks"
 			action="action_library_feedbacks"
             parent="library_mainmenu"
-            sequence="4"
+            sequence="5"
+			groups="base.group_user,library_management.group_library_librarian,library_management.group_library_admin"/>
+
+		<menuitem
+			id="library_mission_vision_menu"
+			name="Mission &amp; Vision"
+			action="library_management.action_library_mission_vision_menu"
+			parent="library_mainmenu"
+			sequence="6"
 			groups="base.group_user,library_management.group_library_librarian,library_management.group_library_admin"/>
 
 		<menuitem
 			id="library_config_root"
 			name="Configuration"
 			parent="library_mainmenu"
-			sequence="5"
+			sequence="7"
 			groups="library_management.group_library_librarian,library_management.group_library_admin"/>
+
+			<menuitem
+                id="library_dashboard_group_config_menu"
+                name="Dashboard"
+                parent="library_config_root"
+                sequence="1"/>
+
+				<menuitem
+						id="library_dashboard_config_submenu"
+						name="Announcements &amp; Events"
+						action="library_management.action_library_dashboard_group_config"
+						parent="library_dashboard_group_config_menu"
+						sequence="1"/>
+
+			<menuitem
+                id="library_mission_vision_config_menu"
+                name="School"
+                parent="library_config_root"
+                sequence="2"/>
+
+				<menuitem
+						id="library_mission_vision_config_submenu"
+						name="Mission &amp; Vision"
+						action="library_management.action_library_mission_vision_config"
+						parent="library_mission_vision_config_menu"
+						sequence="1"/>
 
 			<menuitem
                 id="library_books_config_menu"
                 name="Books"
                 parent="library_config_root"
-                sequence="1"/>
+                sequence="3"/>
 
 				<menuitem
 						id="library_subject_config_submenu"
@@ -103,7 +145,7 @@
                 id="library_personal_information_config_menu"
                 name="Personal Information"
                 parent="library_config_root"
-                sequence="2"/>
+                sequence="4"/>
 
 				<menuitem
 						id="library_section_config_submenu"
@@ -123,7 +165,7 @@
                 id="library_schedule_config_menu"
                 name="Schedule"
                 parent="library_config_root"
-                sequence="3"/>
+                sequence="5"/>
 
 				<menuitem
 						id="library_schedule_config_submenu"

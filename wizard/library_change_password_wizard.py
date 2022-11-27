@@ -1,9 +1,7 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-# Copyright (c) 2021 Taliform Inc.
-#
-# Author:Benjamin Cerdena Jr. <benjamin@taliform.com>
+# Copyright (c) 2022.
 #
 # WARNING: This program as such is intended to be used by professional
 # programmers who take the whole responsibility of assessing all potential
@@ -25,4 +23,22 @@
 #
 ##############################################################################
 
-from . import library_book_requests_wizard, library_feedback_wizard, library_change_password_wizard
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError, UserError
+
+
+class LibraryFeedbackWizard(models.TransientModel):
+    _name = 'library.change.password.wizard'
+
+    personal_info_id = fields.Many2one('library.personal.information', string='User', required=True, ondelete='cascade')
+    user_id = fields.Many2one('res.users', string='User', required=True, ondelete='cascade')
+    user_login = fields.Char(string='User Login', readonly=True, related='user_id.login')
+    new_password = fields.Char(string='New Password', default='')
+
+    def change_password_button(self):
+        for line in self:
+            if not line.new_password:
+                raise UserError(_("Before clicking on 'Change Password', you have to write a new password."))
+            line.user_id.write({'password': line.new_password})
+        # don't keep temporary passwords in the database longer than necessary
+        self.write({'new_password': False})

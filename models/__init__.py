@@ -24,5 +24,5 @@
 #
 ##############################################################################
 
-from . import res_users, library_personal_information, library_book_requests, library_books, \
-    library_feedbacks, library_config
+from . import res_users, library_dashboard_group, library_personal_information, library_book_requests, library_books, \
+    library_feedbacks, library_config, library_mission_vision
