@@ -8,7 +8,7 @@
             <field name="name">library.dashboard.group.view.tree</field>
             <field name="model">library.dashboard.group</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree create="false" delete="false" import="false" export_xlsx="false">
                     <field name="sequence" widget="handle"/>
                     <field name="name"/>
                     <field name="type"/>
@@ -20,7 +20,7 @@
             <field name="name">library.dashboard.group.view.form</field>
             <field name="model">library.dashboard.group</field>
             <field name="arch" type="xml">
-                <form>
+                <form create="false" edit="false" delete="false" import="false">
                     <header>
                     </header>
                     <sheet>
