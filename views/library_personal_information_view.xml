@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+    <!--    Library Personal Information Form-->
+    <record id="library_personal_information_form_view" model="ir.ui.view">
+        <field name="name">library.personal.information.form.view</field>
+        <field name="model">library.personal.information</field>
+        <field name="arch" type="xml">
+            <form string="Information">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" states="draft"
+                            confirm="Confirmed personal information may not be deleted anymore, do you wish to continue?"
+                            groups="library_management.group_library_librarian,library_management.group_library_admin"/>
+                    <button name="action_create_portal_user" string="Create User Login" type="object" class="oe_highlight" attrs="{'invisible' : [('user_id', '!=', False)]}"
+                            confirm="Create User Login?"
+                            groups="library_management.group_library_librarian,library_management.group_library_admin"/>
+                    <button name="action_activate" string="Activate" type="object" class="oe_highlight" states="confirm"
+                            confirm="Do you wish to activate the record?"
+                            groups="library_management.group_library_librarian,library_management.group_library_admin"/>
+
+                    <field name="state" widget="statusbar" type="object" statusbar_visible="draft,confirm,activate"/>
+                </header>
+                <sheet>
+                    <field name="active" invisible="1"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <field name="image_medium" widget="image" class="oe_right oe_avatar"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Student's Name" required="True"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="year_level_id" attrs="{'required':[('state','=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="section_id" attrs="{'required':[('state','=','draft')]}" options="{'no_create': True, 'no_edit': True}"/>
+                        </group>
+                        <group>
+                            <field name="id_no" attrs="{'required':[('state','=','draft')]}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group colspan="4">
+                            <label for="name" string="Full Name"/>
+                            <div>
+                                <span style="margin-right: 5px">
+                                    <field name="first_name" required="1" placeholder="First Name"
+                                           class="oe_inline" attrs="{'readonly':[('active','=',False)]}"/>
+                                </span>
+                                <span style="margin-right: 5px">
+                                    <field name="middle_name" placeholder="Middle Name" class="oe_inline"
+                                           attrs="{'readonly':[('active','=',False)]}"/>
+                                </span>
+                                <span style="margin-right: 5px">
+                                    <field name="last_name" required="1" placeholder="Last Name"
+                                       class="oe_inline" attrs="{'readonly':[('active','=',False)]}"/>
+                                </span>
+                            </div>
+                        </group>
+
+                    </group>
+                    <notebook>
+                        <page name="personal_information" string="Private Information">
+                            <group>
+                                <group string="Private Contact">
+                                    <label for="home_street" string="Home Address"/>
+                                    <div class="o_address_format">
+                                        <field name="home_street"
+                                            placeholder="Street..."
+                                            class="o_address_street" attrs="{'readonly':[('active','=',False)]}"/>
+                                        <field name="home_street2"
+                                            placeholder="Street 2..."
+                                            class="o_address_street" attrs="{'readonly':[('active','=',False)]}"/>
+                                        <field name="home_city"
+                                            placeholder="City" class="o_address_city" attrs="{'readonly':[('active','=',False)]}"/>
+                                        <field name="home_state_id"
+                                            class="o_address_state"
+                                            placeholder="State"
+                                            options="{'no_create': True, 'no_edit': True, 'no_open': True}"
+                                            context="{'country_id': country_id, 'zip': home_zip}" attrs="{'readonly':[('active','=',False)]}"/>
+                                        <field name="home_zip"
+                                            placeholder="ZIP" class="o_address_zip" attrs="{'readonly':[('active','=',False)]}"/>
+                                    </div>
+                                    <field name="home_phone" attrs="{'readonly':[('active','=',False)]}" widget="phone"/>
+                                    <field name="mobile_phone" attrs="{'readonly':[('active','=',False)]}" widget="phone"/>
+                                    <field name="personal_email" widget="email"/>
+                                </group>
+                                <group string="Citizenship" attrs="{'readonly':[('active','=',False)]}">
+                                    <field name="country_id" options='{"no_open": True, "no_create": True}'/>
+                                    <field name="gender"/>
+                                    <field name="birthday"/>
+                                    <field name="place_of_birth"/>
+                                    <field name="country_of_birth"/>
+                                </group>
+                                <group string="Emergency" attrs="{'readonly':[('active','=',False)]}">
+                                    <field name="emergency_contact"/>
+                                    <field name="emergency_phone" class="o_force_ltr"/>
+                                </group>
+                                <group string="User Login" name="user_group"
+                                       attrs="{'invisible':[('user_id', '=', False)]}">
+                                    <field name="user_login" attrs="{'readonly':True}"/>
+                                    <field name="temporary_password" attrs="{'readonly':True}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="book_loan" string="Book Loan" groups="library_management.group_library_librarian,library_management.group_library_admin">
+                             <field name="book_request_ids" attrs="{'readonly': True}">
+                                    <tree editable="bottom" create="false" edit="false" delete="false"
+                                          decoration-danger="state == 'overdue'"
+                                          decoration-info="state == 'in_progress'"
+                                          decoration-success="state == 'done'">
+                                        <field name="student_id" invisible="1"/>
+                                        <field name="book_title"/>
+                                        <field name="date_request"/>
+                                        <field name="loan_days"/>
+                                        <field name="due_date"/>
+                                        <field name="state"/>
+                                    </tree>
+                            </field>
+                        </page>
+                        <page name="admin_settings" string="Admin Settings" groups="library_management.group_library_librarian,library_management.group_library_admin">
+                            <group>
+                                <group string="User">
+                                    <field name="user_id" options="{'no_create': True, 'no_edit': True}"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+<!--                <div class="oe_chatter">-->
+<!--	      				<field name="message_follower_ids" widget="mail_followers"/>-->
+<!--	      				<field name="message_ids" widget="mail_thread"/>-->
+<!--                </div>-->
+            </form>
+        </field>
+    </record>
+
+    <!--    Library Personal Information Tree-->
+    <record id="library_personal_information_tree_view" model="ir.ui.view">
+        <field name="name">library.personal.information.tree.view</field>
+        <field name="model">library.personal.information</field>
+        <field name="arch" type="xml">
+            <tree string="Personal Information Tree" import="false" export_xlsx="false">
+                <field name="name"/>
+                <field name="id_no"/>
+                <field name="year_level_id"/>
+                <field name="section_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--    Library Personal Information Search-->
+    <record id="library_personal_information_search_view" model="ir.ui.view">
+        <field name="name">library.personal.information.search.view</field>
+        <field name="model">library.personal.information</field>
+        <field name="arch" type="xml">
+            <search string="Name Filter">
+                <field name="name" string="Search Name" filter_domain="[('name','ilike',self)]"/>
+            </search>
+        </field>
+    </record>
+
+<!--    Library Personal Information Actions-->
+    <record id="library_personal_information_action" model="ir.actions.act_window">
+        <field name="name">Personal Information</field>
+        <field name="res_model">library.personal.information</field>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+        <field name="search_view_id" ref="library_personal_information_search_view"/>
+    </record>
+
+    <record model="ir.actions.act_window.view" id="act_library_personal_information_tree">
+        <field name="view_mode">tree</field>
+        <field name="sequence">1</field>
+        <field name="view_id" ref="library_personal_information_tree_view"/>
+        <field name="act_window_id" ref="library_personal_information_action"/>
+    </record>
+    <record model="ir.actions.act_window.view" id="act_library_personal_information_form">
+        <field name="view_mode">form</field>
+        <field name="sequence">2</field>
+        <field name="view_id" ref="library_personal_information_form_view"/>
+        <field name="act_window_id" ref="library_personal_information_action"/>
+    </record>
+</data>
+</odoo>
