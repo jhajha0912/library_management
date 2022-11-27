@@ -34,8 +34,9 @@
                                 <field name="count_request" string="Book Requests" widget="statinfo"/>
                             </button>
                         </div>
+			<field name="image_medium" widget="image" class="oe_right oe_avatar"/>
                         <div class="oe_title">
-                             <field name="image_medium" widget="image" class="oe_right oe_avatar"/>
+                            
                             <label for="name" class="oe_edit_only"/>
                             <h1>
                                 <field name="name" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
